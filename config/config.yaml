@@ -1,0 +1,6 @@
+data_ingestion:
+  bucket_name: "anime_recommendation_18"
+  bucket_file_names:
+    - "anime.csv"
+    - "anime_with_synopsis.csv"
+    - "animelist.csv"
