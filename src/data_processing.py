@@ -169,7 +169,7 @@ class DataProcessor:
 
             self.process_anime_data()
 
-            logger.info("Data Processing Pipeline Run sucesfully .... Congrats")
+            logger.info("Data Processing Pipeline Run sucesfully.")
         except CustomException as e:
             logger.error(str(e))
 
