@@ -12,3 +12,4 @@ joblib
 matplotlib
 wordcloud
 ipykernel
+python-dotenv

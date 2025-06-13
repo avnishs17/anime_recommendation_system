@@ -7,6 +7,11 @@ from src.logger import get_logger
 from src.custom_exception import CustomException
 from src.base_model import BaseModel
 from config.paths_config import *
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  
+
 
 logger = get_logger(__name__)
 
@@ -15,9 +20,9 @@ class ModelTraining:
         self.data_path= data_path
 
         self.experiment = comet_ml.Experiment(
-            api_key="uqgrnGhGvBA0zC3HfdmGf2WN9",
-            project_name="mlops-course-2",
-            workspace="data-guru0"
+            api_key=os.getenv("COMET_ML"),
+            project_name="anime-recommendation",
+            workspace="avnishs17"
         )
         logger.info("Model Training & COMET ML initialized")
     
