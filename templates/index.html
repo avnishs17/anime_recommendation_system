@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    <title>AniRec - Anime Recommendation System</title>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-tv"></i> AniRec
+        </div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Discover Your Next Anime Adventure</h1>
+            <p>Personalized recommendations powered by advanced AI</p>
+        </div>
+    </div>
+
+    <div class="form-container">
+        <div class="form-header">
+            <i class="fas fa-robot form-icon"></i>
+            <h2>Get Personalized Recommendations</h2>
+        </div>
+        <form action="/" method="POST">
+            <label for="userID">Enter your User ID</label>
+            <div class="input-group">
+                <i class="fas fa-id-card input-icon"></i>
+                <input type="number" id="userID" name="userID" placeholder="e.g. 11880" required>
+            </div>
+            <button type="submit"><i class="fas fa-magic"></i> Discover Anime</button>
+        </form>
+
+        {% if recommendations %}
+        <div class="results-container">
+            <div class="results-header">
+                <i class="fas fa-star"></i>
+                <h2>Your Anime Recommendations</h2>
+            </div>
+            <div class="anime-list">
+                {% for anime in recommendations %}
+                <div class="anime-card">
+                    <div class="anime-icon">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="anime-title">{{ anime }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 AniRec - Anime Recommendation System</p>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
