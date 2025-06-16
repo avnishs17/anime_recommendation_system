@@ -5,6 +5,11 @@ from src.logger import get_logger
 from src.custom_exception import CustomException
 from config.paths_config import *
 from utils.common_functions import read_yaml
+from dotenv import load_dotenv
+load_dotenv()
+
+if not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+    raise EnvironmentError("Missing GOOGLE_APPLICATION_CREDENTIALS env variable.")
 
 logger = get_logger(__name__)
 
