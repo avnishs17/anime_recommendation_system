@@ -51,9 +51,7 @@ pipeline {
                     }
                 }
             }
-        }
-
-        stage('Build and Push Image to GCR'){
+        }        stage('Build and Push Image to GCR'){
             steps{
                 withCredentials([
                     file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS'),

@@ -137,7 +137,7 @@ class ModelTraining:
         except Exception as e:
             logger.error(str(e))
             raise CustomException("Error during saving model and weights Process",e)
-        
+                
 
 if __name__=="__main__":
     model_trainer = ModelTraining(PROCESSED_DIR)
