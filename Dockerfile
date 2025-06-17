@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     libprotobuf-dev \
     protobuf-compiler \
     python3-dev \
+    git \
+    curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -24,14 +26,8 @@ ENV COMET_ML=${COMET_ML}
 # Copy the application code
 COPY . .
 
-
-
 # Install dependencies from requirements.txt
 RUN pip install --no-cache-dir -e .
-
-# Train the model before running the application
-RUN python pipeline/training_pipeline.py
-
 
 # Expose the port that Flask will run on
 EXPOSE 5000
