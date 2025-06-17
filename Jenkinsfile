@@ -14,10 +14,10 @@ pipeline {
             steps{
                 script{
                     echo 'Cloning from Github...'
-                    checkout scmGit(branches: [[name: '*/main']], 
-                    extensions: [], 
-                    userRemoteConfigs: [[url: 'https://github.com/avnishs17/anime_recommendation_system.git']]
-                    )
+                        checkout scmGit(branches: [[name: '*/main']], 
+                        extensions: [], 
+                        userRemoteConfigs: [[credentialsId: 'github-token', 
+                        url: 'https://github.com/avnishs17/anime_recommendation_system.git']])
                 }
             }
         }
