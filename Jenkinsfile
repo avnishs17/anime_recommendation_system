@@ -66,7 +66,9 @@ pipeline {
                     }
                 }
             }
-        }        stage('Deploying to Kubernetes'){
+        }        
+        
+        stage('Deploying to Kubernetes'){
             steps{
                 withCredentials([file(credentialsId:'gcp-key' , variable: 'GOOGLE_APPLICATION_CREDENTIALS' )]){
                     script{
