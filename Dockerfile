@@ -16,12 +16,13 @@ RUN apt-get update && apt-get install -y \
     curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
+    
 # Set the working directory
 WORKDIR /app
 
 ARG COMET_ML
 ENV COMET_ML=${COMET_ML}
+
 
 # Copy the application code
 COPY . .
