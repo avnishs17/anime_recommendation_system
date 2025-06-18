@@ -66,10 +66,7 @@ pipeline {
                     }
                 }
             }
-        }
-
-
-        stage('Deploying to Kubernetes'){
+        }        stage('Deploying to Kubernetes'){
             steps{
                 withCredentials([file(credentialsId:'gcp-key' , variable: 'GOOGLE_APPLICATION_CREDENTIALS' )]){
                     script{
@@ -79,6 +76,15 @@ pipeline {
                         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
                         gcloud config set project ${GCP_PROJECT}
                         gcloud container clusters get-credentials ml-app-cluster --region us-east1
+                        
+                        # Create image pull secret for GCR
+                        kubectl delete secret gcr-json-key --ignore-not-found=true
+                        kubectl create secret docker-registry gcr-json-key \
+                            --docker-server=gcr.io \
+                            --docker-username=_json_key \
+                            --docker-password="$(cat ${GOOGLE_APPLICATION_CREDENTIALS})" \
+                            --docker-email=jenkins@${GCP_PROJECT}.iam.gserviceaccount.com
+                        
                         kubectl apply -f deployment.yaml
                         '''
                     }
