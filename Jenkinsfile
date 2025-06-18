@@ -14,10 +14,7 @@ pipeline {
             steps{
                 script{
                     echo 'Cloning from Github...'
-                        checkout scmGit(branches: [[name: '*/main']], 
-                        extensions: [], 
-                        userRemoteConfigs: [[credentialsId: 'github-token', 
-                        url: 'https://github.com/avnishs17/anime_recommendation_system.git']])
+                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-token', url: 'https://github.com/avnishs17/anime_recommendation_system.git']])
                 }
             }
         }
@@ -31,19 +28,18 @@ pipeline {
                     . ${VENV_DIR}/bin/activate
                     pip install --upgrade pip
                     pip install -e .
-                    pip install dvc
+                    pip install  dvc
                     '''
                 }
             }
         }
 
+
         stage('DVC Pull'){
             steps{
-                withCredentials([
-                    file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')
-                ]){
+                withCredentials([file(credentialsId:'gcp-key' , variable: 'GOOGLE_APPLICATION_CREDENTIALS' )]){
                     script{
-                        echo 'DVC Pull....'
+                        echo 'DVC Pul....'
                         sh '''
                         . ${VENV_DIR}/bin/activate
                         dvc pull
@@ -51,14 +47,12 @@ pipeline {
                     }
                 }
             }
-        }        
-        
+        }
+
+
         stage('Build and Push Image to GCR'){
             steps{
-                withCredentials([
-                    file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS'),
-                    string(credentialsId: 'COMET_ML', variable: 'COMET_ML')
-                ]){
+                withCredentials([file(credentialsId:'gcp-key' , variable: 'GOOGLE_APPLICATION_CREDENTIALS' )]){
                     script{
                         echo 'Build and Push Image to GCR'
                         sh '''
@@ -66,11 +60,7 @@ pipeline {
                         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
                         gcloud config set project ${GCP_PROJECT}
                         gcloud auth configure-docker --quiet
-
-                        docker build \
-                            --build-arg COMET_ML=${COMET_ML} \
-                            -t gcr.io/${GCP_PROJECT}/ml-project:latest .
-
+                        docker build -t gcr.io/${GCP_PROJECT}/ml-project:latest .
                         docker push gcr.io/${GCP_PROJECT}/ml-project:latest
                         '''
                     }
@@ -78,9 +68,10 @@ pipeline {
             }
         }
 
+
         stage('Deploying to Kubernetes'){
             steps{
-                withCredentials([file(credentialsId: 'gcp-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]){
+                withCredentials([file(credentialsId:'gcp-key' , variable: 'GOOGLE_APPLICATION_CREDENTIALS' )]){
                     script{
                         echo 'Deploying to Kubernetes'
                         sh '''
