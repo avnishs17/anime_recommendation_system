@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: ml-app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: ml-app
@@ -12,13 +12,11 @@ spec:
       labels:
         app: ml-app
     spec:
-      imagePullSecrets:
-      - name: gcr-json-key
       containers:
       - name: ml-app-container
         image: gcr.io/gentle-waters-459210-d0/ml-project:latest
         ports:
-        - containerPort: 5000
+        - containerPort: 5000  # Replace with the port your app listens on
 ---
 apiVersion: v1
 kind: Service
