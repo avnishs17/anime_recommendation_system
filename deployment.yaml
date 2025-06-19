@@ -16,7 +16,7 @@ spec:
       - name: ml-app-container
         image: gcr.io/gentle-waters-459210-d0/ml-project:latest
         ports:
-        - containerPort: 5000  # Replace with the port your app listens on
+        - containerPort: 5000
 ---
 apiVersion: v1
 kind: Service

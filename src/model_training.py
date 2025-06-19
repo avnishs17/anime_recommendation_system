@@ -8,7 +8,6 @@ from src.custom_exception import CustomException
 from src.base_model import BaseModel
 from config.paths_config import *
 from dotenv import load_dotenv
-import os
 
 load_dotenv()  
 
