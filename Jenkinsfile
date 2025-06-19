@@ -16,7 +16,7 @@ pipeline {
                     echo 'Cloning from Github...'
                     checkout scmGit(branches: [[name: '*/main']], extensions: [], 
                     userRemoteConfigs: [[credentialsId: 'github-token', url: 'https://github.com/avnishs17/anime_recommendation_system.git']])                
-                    }
+                }
             }
         }
 
