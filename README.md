@@ -254,6 +254,8 @@ docker restart jenkins-dind
 Go back to the Jenkins Dashboard and sign in again.
 
 # Now we need to write Dockerfile and Jenkinsfile we will use to build, push and deploy.
+# Also you need to manually goto Google Kubenertes Engine and create a cluster make sure to choose the region. In my jenkinsfile I am using '--zone' instead of '--region' becasue i created the cluster by choosing zone instead of region. You would also need to turn on Kubeneter engine api and other required api like compute engine api, container registry api, artifact registry api etc
+
 ## Project Dockerfile
 
 This `Dockerfile` is located in the root of your project and is used to build the application image.
