@@ -255,6 +255,7 @@ Go back to the Jenkins Dashboard and sign in again.
 
 # Now we need to write Dockerfile and Jenkinsfile we will use to build, push and deploy.
 # Also you need to manually goto Google Kubenertes Engine and create a cluster make sure to choose the region. In my jenkinsfile I am using '--zone' instead of '--region' becasue i created the cluster by choosing zone instead of region. You would also need to turn on Kubeneter engine api and other required api like compute engine api, container registry api, artifact registry api etc
+# Check the Jenkinsfile from repor make sure you add your project name and 'ml-app-cluster' for cluster in kubernetes and region or zone.
 
 ## Project Dockerfile
 
