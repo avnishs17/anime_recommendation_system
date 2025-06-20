@@ -35,6 +35,8 @@ COPY . .
 # Install the package in development mode
 RUN pip install --no-cache-dir -e .
 
+# for training the model
+# RUN python pipeline/training_pipeline.py
 # Expose the port that Flask will run on
 EXPOSE 5000
 
