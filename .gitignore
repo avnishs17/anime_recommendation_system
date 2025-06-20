@@ -15,3 +15,4 @@ anime_recommendation_system.egg-info/*
 __pycache__/
 env/*
 settings.json
+
