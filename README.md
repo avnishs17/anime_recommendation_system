@@ -52,14 +52,54 @@ To ensure the default compute service account for Kubernetes can pull images fro
 
 ## Data and Model Versioning with DVC
 
-This project utilizes DVC (Data Version Control) for tracking data and model weights.
+This project utilizes DVC (Data Version Control) for tracking data and model weights with Google Cloud Storage as the remote storage.
 
-After training, add the desired folders to DVC:
+### DVC Setup
 
+1. Initialize DVC in your project:
 ```bash
 dvc init
-dvc add folder_name
 ```
+
+2. Configure the remote storage by editing `.dvc/config` file:
+   - Navigate to `.dvc/config` file in your project
+   - Update the configuration to point to your GCS bucket:
+```
+[core]
+    remote = myremote
+['remote "myremote"']
+    url = gs://your_bucket_name/
+```
+Replace `your_bucket_name` with your actual Google Cloud Storage bucket name.
+
+3. Add your artifacts to DVC tracking:
+```bash
+dvc add artifacts/raw
+dvc add artifacts/processed  
+dvc add artifacts/model
+dvc add artifacts/weights
+dvc add artifacts/model_checkpoint
+```
+
+4. Commit the DVC files to git:
+```bash
+git add artifacts/*.dvc .dvc/config
+git commit -m "Add DVC tracking for artifacts"
+```
+
+5. Push artifacts to remote storage:
+```bash
+dvc push
+```
+
+### Pulling DVC Artifacts
+
+To pull the latest artifacts from the remote storage:
+```bash
+dvc pull
+```
+
+**Note:** The Docker build process automatically pulls DVC artifacts using `dvc pull` during the image creation.
 
 ## Application Structure
 
