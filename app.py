@@ -10,9 +10,10 @@ def home():
     if request.method == 'POST':
         try:
             user_id = int(request.form["userID"])
+
             recommendations = hybrid_recommendation(user_id)
         except Exception as e:
-            print(f"Error occurred: {e}")
+            print("Erorr occured....")
 
     return render_template('index.html' , recommendations=recommendations)
 

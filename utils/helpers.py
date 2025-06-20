@@ -11,7 +11,9 @@ def getAnimeFrame(anime,path_df):
         return df[df.anime_id == anime]
     if isinstance(anime,str):
         return df[df.eng_version == anime]
-    ########## 2. GET_SYNOPSIS
+    
+
+########## 2. GET_SYNOPSIS
 
 def getSynopsis(anime,path_synopsis_df):
     synopsis_df = pd.read_csv(path_synopsis_df)
@@ -27,11 +29,7 @@ def find_similar_animes(name, path_anime_weights, path_anime2anime_encoded, path
     # Load weights and encoded-decoded mappings
     anime_weights = joblib.load(path_anime_weights)
     anime2anime_encoded = joblib.load(path_anime2anime_encoded)
-    
-    # Load decoded mappings and convert float values to integers
     anime2anime_decoded = joblib.load(path_anime2anime_decoded)
-    # Convert float values to integers
-    anime2anime_decoded = {k: int(v) for k, v in anime2anime_decoded.items()}
 
     # Get the anime ID for the given name
     index = getAnimeFrame(name, path_anime_df).anime_id.values[0]
@@ -88,10 +86,7 @@ def find_similar_users(item_input , path_user_weights , path_user2user_encoded ,
 
         user_weights = joblib.load(path_user_weights)
         user2user_encoded = joblib.load(path_user2user_encoded)
-        
-        # Load decoded mappings and convert float values to integers
         user2user_decoded = joblib.load(path_user2user_decoded)
-        user2user_decoded = {k: int(v) for k, v in user2user_decoded.items()}
 
         index=item_input
         encoded_index = user2user_encoded.get(index)

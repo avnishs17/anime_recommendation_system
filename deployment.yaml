@@ -13,10 +13,10 @@ spec:
         app: ml-app
     spec:
       containers:
-      - name: ml-app-container
-        image: gcr.io/gentle-waters-459210-d0/ml-project:latest
-        ports:
-        - containerPort: 5000
+       - name: ml-app-container
+         image: gcr.io/gentle-waters-459210-d0/ml-project:latest
+         ports:
+          - containerPort: 5000
 ---
 apiVersion: v1
 kind: Service
@@ -30,3 +30,14 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 5000
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: ml-app-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: ml-app

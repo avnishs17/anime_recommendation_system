@@ -1,0 +1,216 @@
+conda env setup
+setup.py
+install the libraries
+define logger and custom exception
+To fetch data from gcp bucket we need service account permissions and also other permission to build and push container registry of gcp
+# for the service account we will use Goto IAM -> service account -> create new service account that you will use add these permission roles
+Cloud Run Admin
+Editor
+Owner
+Service Account User
+Storage Admin
+Storage Object Viewer
+Viewer
+
+# for the existing defualt compute service account for kubernetes to have permission to pull image from gcr since i was getting error about auth permission so i set these i am not sure about storage object viewer but once i added Artifact Registry Reader and Kubernetes Engine Default Node Service Account it worked for me
+Artifact Registry Reader
+Kubernetes Engine Default Node Service Account
+Storage Object Viewer
+
+Get the json key from IAM -> service account -> right click 3 dots on right side of service account you created choose -> Manage keys and create new json key and downlaod that we wil use as our gcp verification during data-ingestion and also during build and push and deployment
+
+set you gcp srvice account json key file path in .env with 'GOOGLE_APPLICATION_CREDENTIALS'
+Fetch data from gcp bucket through data_ingestion.py
+Preprocess the data through data_preprocessing.py
+Model training through model_training.py 
+we also would be doing data versioning for data and weights of the model we can also train and push during build through jenkins but it would take too
+so after training add the path to folder we want to track with dvc -> dvc init -> dvc add folder_name
+then create the app.py, index.html in teamplates and style.css in static for usr interface 
+
+after the app is working 
+
+create dind setup 
+through docker file in custom_jenkins folder 
+Download Docker Desktop ----> Run it in background
+
+------------------------------------------------ SETUP JENKINS CONTAINER ---------------------------------------------
+
+Create a custom_jenkins folder ---> Create a Dockerfile inside it ---> Paste Below Code in it
+
+
+
+# Use the Jenkins image as the base image
+FROM jenkins/jenkins:lts
+
+# Switch to root user to install dependencies
+USER root
+
+# Install prerequisites and Docker
+RUN apt-get update -y && \
+    apt-get install -y apt-transport-https ca-certificates curl gnupg software-properties-common && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
+    echo "deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable" > /etc/apt/sources.list.d/docker.list && \
+    apt-get update -y && \
+    apt-get install -y docker-ce docker-ce-cli containerd.io && \
+    apt-get clean
+
+# Add Jenkins user to the Docker group (create if it doesn't exist)
+RUN groupadd -f docker && \
+    usermod -aG docker jenkins
+
+# Create the Docker directory and volume for DinD
+RUN mkdir -p /var/lib/docker
+VOLUME /var/lib/docker
+
+# Switch back to the Jenkins user
+USER jenkins
+
+----------------------------------------------------------------------------
+
+After Creating Dockerfile ----> Open VS Code Terminal in CMD ----> cd custom_jenkins 
+
+
+After this use following commands one by one:
+
+docker build -t jenkins-dind . 
+docker images
+
+docker run -d --name jenkins-dind --privileged -p 8080:8080 -p 50000:50000 -v //var/run/docker.sock:/var/run/docker.sock -v jenkins_home:/var/jenkins_home jenkins-dind
+
+
+------ You will get some alphanumeric if code run is sucessfull....
+
+docker ps
+docker logs jenkins-dind
+
+------- This will give you a password for Jenkins Installation ---> Copy that password
+
+
+GO to browser--> localhost:8080 --> Paste that password --> Install suggested plugins and create your user...
+
+Also add gcp-key and github token
+GOto github-settings->developer settings -> personal access token-> then token create classic token give  give permission role 'repo' and 'admin:repo_hook'
+then goto jenkins dashboard ->manage jenkins -> credential -> click global -> create new -> kind 'username with password'-> paste your github user name and then password as token set name 'github-token' and same for dewcription save it
+then create new -> coose secret file from kind options -> select the gcp service account json file that we saved then give name as 'gcp-key' and description too save it
+
+then go dashboard create new item select pipeline -> name the item - > next go below in pipeline section choose -> difinition as 'Pipeline from SCM' -> SCM as 'git' -> your github repo link for this proeject -> Credential choose 'github-token' -> select branch in which you were working -> Keep script path as Jenkinsfile and apply and save it
+
+
+THen COME TO TERMINAL ( custom_jenkins terminal ) : Write following commands -->
+
+docker exec -u root -it jenkins-dind bash
+apt update -y
+apt install -y python3
+python3 --version
+ln -s /usr/bin/python3 /usr/bin/python
+python --version
+apt install -y python3-pip
+apt install -y python3-venv
+
+----------------------------------------------------- INSTALL GOOGLE CLOUD  and Kubernetes CLI ON JENKINS CONTAINER ------------------------------------------------
+
+docker exec -u root -it jenkins-dind bash
+apt-get update
+apt-get install -y curl apt-transport-https ca-certificates gnupg
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+apt-get update && apt-get install -y google-cloud-sdk
+apt-get update && apt-get install -y kubectl
+apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+kubectl version --client
+gcloud --version
+--------------------------------------------------------- Give Docker PERMISSIONS -------------------------------------------
+
+----------GRANT DOCKER PERMSIION TO JENKINS USER :
+
+
+docker exec -u root -it jenkins-dind bash
+groupadd docker
+usermod -aG docker jenkins
+usermod -aG root jenkins
+exit
+docker restart jenkins-dind
+
+GO TO JENKINS DASHBOIARD AND SIGN IN AGAIN----->
+
+--------------------------------------------------------- PROJECT DOCKERFILE --------------------------------------------------
+
+FROM python:3.8-slim
+
+# Set environment variables to prevent Python from writing .pyc files & Ensure Python output is not buffered
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Install system dependencies required by TensorFlow
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libatlas-base-dev \
+    libhdf5-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    python3-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the application code
+COPY . .
+
+# Install dependencies from requirements.txt
+RUN pip install --no-cache-dir -e .
+
+# Train the model before running the application
+<!-- RUN python pipeline/training_pipeline.py -->
+
+# Expose the port that Flask will run on
+EXPOSE 5000
+
+# Command to run the app
+CMD ["python", "application.py"]
+
+
+
+
+# make sure you are using your own gcp proejct [mlops-new-447207] account etc 
+
+
+
+
+after pusing the evrything to github got to jenkins dashboard select the item you created then click on build if you have followed evrything properly it should work
+
+------------------------------------------------------- KUBERNETES DEPLOYMENT YAML --------------------------------------------
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ml-app
+  template:
+    metadata:
+      labels:
+        app: ml-app
+    spec:
+      containers:
+      - name: ml-app-container
+        image: gcr.io/mlops-new-447207/ml-project:latest
+        ports:
+        - containerPort: 5000  # Replace with the port your app listens on
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-app-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: ml-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
